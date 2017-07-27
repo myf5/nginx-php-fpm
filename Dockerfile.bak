@@ -78,10 +78,10 @@ RUN wget -O /usr/src/nginx-dynamic_tls.patch https://raw.githubusercontent.com/c
 		
 ENV GPG_KEYS B0F4253373F8F6F510D42178520A9993A1C052F8
 ENV CONFIG "\
-	--prefix=/usr/local/nginx \
+	--prefix=/etc/nginx \
 	--sbin-path=/usr/sbin/nginx \
 	--modules-path=/usr/lib/nginx/modules \
-	--conf-path=/usr/local/nginx/conf/nginx.conf \
+	--conf-path=/etc/nginx/nginx.conf \
 	--error-log-path=/var/log/nginx/error.log \
 	--http-log-path=/var/log/nginx/access.log \
 	--pid-path=/var/run/nginx.pid \
@@ -151,9 +151,9 @@ RUN \
 	&& ./configure $CONFIG \
 	&& make \
 	&& make install \
-	&& rm -rf /usr/local/nginx/html/ \
-	&& mkdir /usr/local/nginx/vhost/ \
-	&& mkdir /usr/local/nginx/ssl/ \
+	&& rm -rf /etc/nginx/html/ \
+	&& mkdir /etc/nginx/vhost/ \
+	&& mkdir /etc/nginx/ssl/ \
 	&& mkdir -p /home/wwwroot/myf5/ \
 	&& mkdir -p /etc/letsencrypt/sct/ \
 	&& install -m644 html/index.html /home/wwwroot/myf5/ \
@@ -163,7 +163,7 @@ RUN \
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_geoip_module-debug.so /usr/lib/nginx/modules/ngx_http_geoip_module-debug.so \
 	&& install -m755 objs/ngx_http_perl_module-debug.so /usr/lib/nginx/modules/ngx_http_perl_module-debug.so \
-	&& ln -s ../../usr/lib/nginx/modules /usr/local/nginx/modules \
+	&& ln -s ../../usr/lib/nginx/modules /etc/nginx/modules \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& runDeps="$( \
@@ -185,14 +185,15 @@ RUN \
 	# forward request and error logs to docker log collector
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log \
+	&& ln -s /etc/nginx /usr/local/nginx
 
 # COPY pre defined file, make sure there is correct nginx configuration files, these files are based my own nginx.
-COPY nginx.conf /usr/local/nginx/conf/nginx.conf
-COPY enable-php.conf /usr/local/nginx/conf/enable-php.conf
-COPY fastcgi.conf /usr/local/nginx/conf/fastcgi.conf
-COPY wordpress.conf /usr/local/nginx/conf/wordpress.conf
-COPY ./vhost/nginx.vh.default.conf /usr/local/nginx/conf/vhost/default.conf
-COPY ./ssl/* /usr/local/nginx/conf/ssl/
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY enable-php.conf /etc/nginx/enable-php.conf
+COPY fastcgi.conf /etc/nginx/fastcgi.conf
+COPY wordpress.conf /etc/nginx/wordpress.conf
+COPY ./vhost/nginx.vh.default.conf /etc/nginx/vhost/default.conf
+COPY ./ssl/* /etc/nginx/ssl/
 COPY digicert.sct /etc/letsencrypt/sct/digicert.sct
 COPY icarus.sct /etc/letsencrypt/sct/icarus.sct
 COPY Shanghai /etc/localtime 
@@ -243,6 +244,9 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     rm /tmp/memcached.tar.gz &&\
     docker-php-ext-install pdo_mysql pdo_sqlite mysqli mcrypt gd exif intl xsl json soap dom zip opcache memcached && \
     docker-php-source delete && \
+    #mkdir -p /etc/nginx && \
+    #mkdir -p /var/www/app && \
+    #mkdir -p /run/nginx && \
     mkdir -p /var/log/supervisor && \
     echo "Asia/Shanghai" >  /etc/timezone &&\
     EXPECTED_COMPOSER_SIGNATURE=$(wget -q -O - https://composer.github.io/installer.sig) && \
