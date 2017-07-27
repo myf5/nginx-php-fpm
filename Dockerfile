@@ -48,19 +48,19 @@ RUN	apk add --no-cache --virtual .build-deps \
 # CERTIFICATE TRANSPARENCY        #
 ###################################
 
-RUN wget https://github.com/grahamedgecombe/nginx-ct/archive/v${NGX_VERSION_TRANSPARENCY}.zip \
-	&& unzip v${NGX_VERSION_TRANSPARENCY}.zip -d /usr/src \
-	&& rm v${NGX_VERSION_TRANSPARENCY}.zip \
-	&& echo "CT Downloaded and unzipped"
+COPY nginx-ct-1.3.2.zip /tmp/
+RUN unzip /tmp/nginx-ct-1.3.2.zip -d /usr/src \
+	&& rm /tmp/nginx-ct-1.3.2.zip \
+	&& echo "CT copyed and unzipped"
 
 ###################################
 # GOOGLE BROTLI      			  #
 ###################################
 
-RUN wget https://github.com/panascais/ngx_brotli/archive/${NGX_VERSION_BROTLI}.zip \
-	&& unzip ${NGX_VERSION_BROTLI}.zip -d /usr/src \
-	&& rm ${NGX_VERSION_BROTLI}.zip \
-	&& echo "BROTILI Downloaded and unzipped"
+COPY ngx_brotli-1.0.2.zip /tmp/
+RUN unzip /tmp/ngx_brotli-1.0.2.zip -d /usr/src \
+	&& rm /tmp/ngx_brotli-1.0.2.zip \
+	&& echo "BROTILI copyed and unzipped"
 
 ###################################
 # TLS Dynamic Reord Sizing		  #
