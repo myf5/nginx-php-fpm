@@ -11,5 +11,5 @@ Brotli 1.0.2
 TLS dynamic record sizing patch
 memcached
 
-## It is used for my wordress environment. 
+## It is used for my wordpress environment. 
 So if you want to build yours on this dockerfile, you may need change related conf file and certificates and anything that different to  you environment.
