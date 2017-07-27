@@ -154,11 +154,11 @@ RUN \
 	&& rm -rf /usr/local/nginx/html/ \
 	&& mkdir /usr/local/nginx/vhost/ \
 	&& mkdir /usr/local/nginx/ssl/ \
-	&& mkdir /var/cache/nginx/client_temp \
-	&& mkdir /var/cache/nginx/proxy_temp \
-	&& mkdir /var/cache/nginx/fastcgi_temp \
-	&& mkdir /var/cache/nginx/uwsgi_temp \
-	&& mkdir /var/cache/nginx/scgi_temp \
+	&& mkdir -p /var/cache/nginx/client_temp \
+	&& mkdir -p /var/cache/nginx/proxy_temp \
+	&& mkdir -p /var/cache/nginx/fastcgi_temp \
+	&& mkdir -p /var/cache/nginx/uwsgi_temp \
+	&& mkdir -p /var/cache/nginx/scgi_temp \
 	&& mkdir -p /home/wwwlogs/ \
 	&& mkdir -p /home/wwwroot/myf5/ \
 	&& mkdir -p /etc/letsencrypt/sct/ \
