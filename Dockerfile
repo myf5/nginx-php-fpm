@@ -184,7 +184,8 @@ RUN \
 	\
 	# forward request and error logs to docker log collector
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
-	&& ln -sf /dev/stderr /var/log/nginx/error.log
+	&& ln -sf /dev/stderr /var/log/nginx/error.log \
+	&& ln -s /etc/nginx /usr/local/nginx
 
 # COPY pre defined file, make sure there is correct nginx configuration files, these files are based my own nginx.
 COPY nginx.conf /etc/nginx/nginx.conf
