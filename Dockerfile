@@ -91,8 +91,8 @@ ENV CONFIG "\
 	--http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
 	--http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
 	--http-scgi-temp-path=/var/cache/nginx/scgi_temp \
-	--user=nginx \
-	--group=nginx \
+	--user=www \
+	--group=www \
 	--with-http_ssl_module \
 	--with-http_realip_module \
 	--with-http_addition_module \
@@ -128,8 +128,8 @@ ENV CONFIG "\
 	"
 
 RUN \
-	addgroup -S nginx \
-	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
+	addgroup -S www \
+	&& adduser -D -S -h /var/cache/www -s /sbin/nologin -G www www \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
 	&& export GNUPGHOME="$(mktemp -d)" \
@@ -273,11 +273,11 @@ RUN echo "cgi.fix_pathinfo=0" > ${php_vars} &&\
         -e "s/pm.min_spare_servers = 1/pm.min_spare_servers = 5/g" \
         -e "s/pm.max_spare_servers = 3/pm.max_spare_servers = 20/g" \
         -e "s/;pm.max_requests = 500/pm.max_requests = 200/g" \
-        -e "s/user = www-data/user = nginx/g" \
-        -e "s/group = www-data/group = nginx/g" \
+        -e "s/user = www-data/user = www/g" \
+        -e "s/group = www-data/group = www/g" \
         -e "s/;listen.mode = 0660/listen.mode = 0666/g" \
-        -e "s/;listen.owner = www-data/listen.owner = nginx/g" \
-        -e "s/;listen.group = www-data/listen.group = nginx/g" \
+        -e "s/;listen.owner = www-data/listen.owner = www/g" \
+        -e "s/;listen.group = www-data/listen.group = www/g" \
         -e "s/listen = 127.0.0.1:9000/listen = \/tmp\/php-cgi.sock/g" \
         -e "s/^;clear_env = no$/clear_env = no/" \
         ${fpm_conf}
