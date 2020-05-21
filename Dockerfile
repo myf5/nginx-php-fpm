@@ -241,7 +241,7 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     tar -xzvf /tmp/memcached.tar.gz &&\
     mv memcached-2.2.0 /usr/src/php/ext/memcached &&\
     rm /tmp/memcached.tar.gz &&\
-    docker-php-ext-install pdo_mysql pdo_sqlite mysqli mcrypt gd exif intl xsl json soap dom zip opcache memcached && \
+    docker-php-ext-install pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache memcached && \
     docker-php-source delete && \
     mkdir -p /var/log/supervisor && \
     echo "Asia/Shanghai" >  /etc/timezone &&\
