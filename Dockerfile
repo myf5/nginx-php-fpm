@@ -1,5 +1,4 @@
-FROM php:5.6.31-fpm-alpine
-#FROM alpine:3.6
+FROM php:7.4.6-fpm-alpine3.11
 
 MAINTAINER Jing Lin <web@myf5.net>
 
