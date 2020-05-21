@@ -241,7 +241,7 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     #curl iconv session
     curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-3.1.5.tgz &&\
     tar -xzvf /tmp/memcached.tar.gz &&\
-    mv memcached-2.2.0 /usr/src/php/ext/memcached &&\
+    mv memcached-3.1.5 /usr/src/php/ext/memcached &&\
     rm /tmp/memcached.tar.gz &&\
     docker-php-ext-install pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache memcached && \
     docker-php-source delete && \
