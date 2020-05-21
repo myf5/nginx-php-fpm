@@ -239,7 +239,7 @@ RUN echo @testing 	>> /etc/apk/repositories && \
       --with-freetype=/usr/include/ \
       --with-jpeg=/usr/include/ && \
     #curl iconv session
-    curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-2.2.0.tgz &&\
+    curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-3.1.5.tgz &&\
     tar -xzvf /tmp/memcached.tar.gz &&\
     mv memcached-2.2.0 /usr/src/php/ext/memcached &&\
     rm /tmp/memcached.tar.gz &&\
