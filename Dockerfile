@@ -226,6 +226,8 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     libpng-dev \
     icu-dev \
     libpq \
+    libzip \
+    libzip-devel \
     libxslt-dev \
     libffi-dev \
     libmemcached-dev \
