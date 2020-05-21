@@ -234,9 +234,7 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     sqlite-dev \
     libjpeg-turbo-dev && \
     docker-php-ext-configure gd \
-      --with-gd \
       --with-freetype=/usr/include/ \
-      --with-png=/usr/include/ \
       --with-jpeg=/usr/include/ && \
     #curl iconv session
     curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-2.2.0.tgz &&\
