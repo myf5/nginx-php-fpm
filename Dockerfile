@@ -131,6 +131,8 @@ RUN \
 	&& adduser -D -S -h /var/cache/www -s /sbin/nologin -G www www \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
+    && curl -fSL https://downloads.isc.org/isc/pgpkeys/codesign2019.txt -o pgpkey2019.txt \
+    && gpg --import pgpkey2019.txt \
 	&& export GNUPGHOME="$(mktemp -d)" \
     && found=''; \
     for server in \
