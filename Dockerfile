@@ -136,6 +136,7 @@ RUN \
 	&& patch -p1 < /usr/src/nginx-dynamic_tls.patch \
 	&& echo "Dynamic TLS size recording pathed for nginx" \
 	&& ./configure $CONFIG --with-debug \
+    && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
 	&& make \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
@@ -143,6 +144,7 @@ RUN \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
 	&& ./configure $CONFIG \
+    && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
 	&& make \
 	&& make install \
 	&& rm -rf /usr/local/nginx/html/ \
