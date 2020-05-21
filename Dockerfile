@@ -136,7 +136,7 @@ RUN \
 	&& patch -p1 < /usr/src/nginx-dynamic_tls.patch \
 	&& echo "Dynamic TLS size recording pathed for nginx" \
 	&& ./configure $CONFIG --with-debug \
-        && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
+    && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
 	&& make \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
@@ -144,7 +144,7 @@ RUN \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
 	&& ./configure $CONFIG \
-        && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
+    && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
 	&& make \
 	&& make install \
 	&& rm -rf /usr/local/nginx/html/ \
@@ -235,9 +235,9 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     libjpeg-turbo-dev && \
     docker-php-ext-configure gd \
       --with-gd \
-      --with-freetype-dir=/usr/include/ \
-      --with-png-dir=/usr/include/ \
-      --with-jpeg-dir=/usr/include/ && \
+      --with-freetype=/usr/include/ \
+      --with-png=/usr/include/ \
+      --with-jpeg=/usr/include/ && \
     #curl iconv session
     curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-2.2.0.tgz &&\
     tar -xzvf /tmp/memcached.tar.gz &&\
