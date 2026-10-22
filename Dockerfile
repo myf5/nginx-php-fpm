@@ -1,4 +1,5 @@
-FROM php:7.4.6-fpm-alpine
+FROM php:fpm-alpine3.24
+###FROM php:7.4.6-fpm-alpine
 
 MAINTAINER Jing Lin <web@myf5.net>
 
@@ -33,6 +34,10 @@ RUN	apk add --no-cache --virtual .build-deps \
 		ca-certificates \
 		g++ \
 		zip \
+		patch \
+		makedepend \
+	&& printf '%s\n' '#!/bin/sh' 'exec /usr/bin/gcc "$@" -fcommon -std=gnu99 -Wno-error -Wno-implicit-function-declaration -Wno-implicit-int -Wno-int-conversion -Wno-incompatible-pointer-types -Wno-deprecated-declarations -Wno-unused-parameter -Wno-sign-compare -Wno-discarded-qualifiers' > /usr/local/bin/gcc-compat \
+	&& chmod +x /usr/local/bin/gcc-compat \
 	&& mkdir -p /usr/src \
 	&& wget https://openssl.org/source/openssl-$OPENSSL_VERSION.tar.gz \
 	&& tar zxvf openssl-$OPENSSL_VERSION.tar.gz -C /usr/src \
@@ -40,8 +45,8 @@ RUN	apk add --no-cache --virtual .build-deps \
 	&& wget -O /usr/src/chacha.patch $OPENSSL_CHACHA \
 	&& cd /usr/src/openssl-$OPENSSL_VERSION \
 	&& patch -p1 < ../chacha.patch \
-	&& ./config \
-	&& make depend
+	&& CC=/usr/local/bin/gcc-compat ./config \
+	&& CC=/usr/local/bin/gcc-compat make depend
 	
 ###################################
 # CERTIFICATE TRANSPARENCY        #
@@ -127,7 +132,8 @@ ENV CONFIG "\
 	"
 
 RUN \
-	addgroup -S www \
+	export CC=/usr/local/bin/gcc-compat \
+	&& addgroup -S www \
 	&& adduser -D -S -h /var/cache/www -s /sbin/nologin -G www www \
 	&& curl -fSL http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
@@ -136,7 +142,7 @@ RUN \
 	&& patch -p1 < /usr/src/nginx-dynamic_tls.patch \
 	&& echo "Dynamic TLS size recording pathed for nginx" \
 	&& ./configure $CONFIG --with-debug \
-    && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
+	&& sed -i -E 's/(^|[[:space:]])-Werror([[:space:]]|$)/ /g' /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
 	&& make \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
@@ -144,7 +150,7 @@ RUN \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
 	&& ./configure $CONFIG \
-    && sed -i "s/-Werror//g" /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
+	&& sed -i -E 's/(^|[[:space:]])-Werror([[:space:]]|$)/ /g' /usr/src/nginx-$NGINX_VERSION/objs/Makefile \
 	&& make \
 	&& make install \
 	&& rm -rf /usr/local/nginx/html/ \
@@ -186,7 +192,7 @@ RUN \
 	\
 	# forward request and error logs to docker log collector
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
-	&& ln -sf /dev/stderr /var/log/nginx/error.log \
+	&& ln -sf /dev/stderr /var/log/nginx/error.log
 
 # COPY pre defined file, make sure there is correct nginx configuration files, these files are based my own nginx.
 COPY nginx.conf /usr/local/nginx/conf/nginx.conf
@@ -212,9 +218,9 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     curl \
     libcurl \
     git \
-    python \
-    python-dev \
-    py-pip \
+    python3 \
+    python3-dev \
+    py3-pip \
     augeas-dev \
     openssl-dev \
     ca-certificates \
@@ -228,6 +234,7 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     libpq \
     libzip \
     libzip-dev \
+    mariadb-connector-c-dev \
     libxslt-dev \
     libffi-dev \
     libmemcached-dev \
@@ -239,11 +246,11 @@ RUN echo @testing 	>> /etc/apk/repositories && \
       --with-freetype=/usr/include/ \
       --with-jpeg=/usr/include/ && \
     #curl iconv session
-    curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-3.1.5.tgz &&\
+    curl -L -o /tmp/memcached.tar.gz http://pecl.php.net/get/memcached-3.4.0.tgz &&\
     tar -xzvf /tmp/memcached.tar.gz &&\
-    mv memcached-3.1.5 /usr/src/php/ext/memcached &&\
+    mv memcached-3.4.0 /usr/src/php/ext/memcached &&\
     rm /tmp/memcached.tar.gz &&\
-    docker-php-ext-install pdo_mysql pdo_sqlite mysqli gd exif intl xsl json soap dom zip opcache memcached && \
+    docker-php-ext-install pdo_mysql pdo_sqlite mysqli gd exif intl xsl soap zip memcached && \
     docker-php-source delete && \
     mkdir -p /var/log/supervisor && \
     echo "Asia/Shanghai" >  /etc/timezone &&\
@@ -255,7 +262,7 @@ RUN echo @testing 	>> /etc/apk/repositories && \
     #pip install -U pip && \
     #pip install -U certbot && \
     #mkdir -p /etc/letsencrypt/webrootauth && \
-    apk del gcc musl-dev linux-headers libffi-dev augeas-dev python-dev &&\
+    apk del gcc musl-dev linux-headers libffi-dev augeas-dev python3-dev &&\
     rm -rf /usr/src
 
 
@@ -277,9 +284,10 @@ RUN echo "cgi.fix_pathinfo=0" > ${php_vars} &&\
         -e "s/;listen.mode = 0660/listen.mode = 0666/g" \
         -e "s/;listen.owner = www-data/listen.owner = www/g" \
         -e "s/;listen.group = www-data/listen.group = www/g" \
-        -e "s/listen = 127.0.0.1:9000/listen = \/tmp\/php-cgi.sock/g" \
+        -e "s/^;*listen = .*/listen = \/tmp\/php-cgi.sock/" \
         -e "s/^;clear_env = no$/clear_env = no/" \
-        ${fpm_conf}
+        ${fpm_conf} \
+    && printf '%s\n' '[www]' 'listen = /tmp/php-cgi.sock' 'listen.owner = www' 'listen.group = www' 'listen.mode = 0666' > /usr/local/etc/php-fpm.d/zzz-listen.conf
 
 ADD start.sh /start.sh
 ADD supervisord.conf /etc/supervisord.conf
